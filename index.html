@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>블랙홀 시뮬레이터</title>
+
+  <!-- 글꼴: 제목은 우주 느낌의 Orbitron, 본문은 Noto Sans KR -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- 우주 배경과 블랙홀은 Canvas에 그린다 (js/main.js) -->
+  <canvas id="space"></canvas>
+
+  <!-- 화면 아래쪽의 제목과 버튼 -->
+  <main class="intro">
+    <p class="eyebrow">빛조차 빠져나올 수 없는 곳</p>
+    <h1 class="title">BLACK HOLE</h1>
+    <p class="subtitle">블랙홀 시뮬레이터</p>
+
+    <nav class="menu">
+      <a href="about.html" class="btn">블랙홀이 뭔가요?</a>
+      <a href="simulation.html" class="btn btn-primary">블랙홀 시뮬레이션 하러가기</a>
+    </nav>
+  </main>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
