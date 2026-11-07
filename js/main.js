@@ -19,7 +19,7 @@ function resize() {
 
   centerX = width / 2;
   centerY = height * 0.38;
-  holeRadius = Math.min(width, height) * 0.1;
+  holeRadius = Math.max(1, Math.min(width, height) * 0.1);
 }
 
 // ===== 마우스 =====
@@ -170,6 +170,7 @@ function draw() {
   const d = Math.hypot(mouse.x - centerX, mouse.y - centerY);
   const target = Math.max(0, 1 - d / (holeRadius * 5));
   closeness += (target - closeness) * 0.05;   // 부드럽게 따라가기
+  if (!Number.isFinite(closeness)) closeness = 0;
   const speedBoost = 1 + closeness * 2.5;
 
   // 마우스 반대 방향으로 배경이 살짝 움직이는 입체 효과
