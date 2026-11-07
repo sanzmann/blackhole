@@ -1,0 +1,131 @@
+/* ===== 기본 설정 ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #000;
+  color: #fff;
+  font-family: "Noto Sans KR", sans-serif;
+  overflow: hidden;            /* 초기 화면은 스크롤 없이 한 화면 */
+  height: 100vh;
+}
+
+/* 캔버스를 화면 전체에 깔기 */
+#space {
+  position: fixed;
+  inset: 0;
+  display: block;
+}
+
+/* ===== 제목 + 버튼 영역 ===== */
+.intro {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 9vh;
+  padding: 0 16px;
+  text-align: center;
+  pointer-events: none;        /* 빈 공간은 캔버스가 마우스를 받도록 */
+}
+
+.eyebrow {
+  font-size: 0.95rem;
+  font-weight: 300;
+  letter-spacing: 0.4em;
+  color: rgba(255, 210, 160, 0.75);
+  opacity: 0;
+  animation: fadeUp 1.5s ease 0.5s forwards;
+}
+
+.title {
+  margin-top: 12px;
+  font-family: "Orbitron", sans-serif;
+  font-size: clamp(2.6rem, 8vw, 5.5rem);
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  padding-left: 0.25em;        /* letter-spacing 때문에 오른쪽으로 쏠리는 것 보정 */
+  background: linear-gradient(180deg, #ffffff 0%, #ffd8a8 60%, #ff9a4a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 40px rgba(255, 150, 60, 0.25);
+  opacity: 0;
+  animation: titleIn 2.2s ease 0.2s forwards;
+}
+
+.subtitle {
+  margin-top: 6px;
+  font-size: 1.05rem;
+  letter-spacing: 0.6em;
+  padding-left: 0.6em;
+  color: rgba(255, 255, 255, 0.6);
+  opacity: 0;
+  animation: fadeUp 1.5s ease 1s forwards;
+}
+
+/* ===== 버튼 ===== */
+.menu {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  opacity: 0;
+  animation: fadeUp 1.5s ease 1.5s forwards;
+}
+
+.btn {
+  pointer-events: auto;
+  display: inline-block;
+  padding: 14px 32px;
+  border: 1px solid rgba(255, 190, 120, 0.45);
+  border-radius: 999px;
+  color: #ffe3c4;
+  text-decoration: none;
+  font-size: 1rem;
+  letter-spacing: 0.05em;
+  background: rgba(20, 10, 0, 0.35);
+  backdrop-filter: blur(6px);
+  transition: all 0.35s ease;
+}
+
+.btn:hover {
+  border-color: #ffb36b;
+  color: #fff;
+  box-shadow: 0 0 24px rgba(255, 150, 60, 0.45), inset 0 0 12px rgba(255, 150, 60, 0.2);
+  transform: translateY(-2px);
+}
+
+.btn-primary {
+  background: linear-gradient(90deg, rgba(255, 140, 40, 0.85), rgba(255, 90, 30, 0.85));
+  border-color: transparent;
+  color: #fff;
+  font-weight: 500;
+}
+
+.btn-primary:hover {
+  box-shadow: 0 0 32px rgba(255, 120, 40, 0.75);
+}
+
+/* ===== 애니메이션 ===== */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes titleIn {
+  from { opacity: 0; letter-spacing: 0.6em; filter: blur(8px); }
+  to   { opacity: 1; letter-spacing: 0.25em; filter: blur(0); }
+}
+
+/* ===== 모바일 ===== */
+@media (max-width: 600px) {
+  .intro { bottom: 6vh; }
+  .eyebrow { font-size: 0.8rem; letter-spacing: 0.25em; }
+  .subtitle { font-size: 0.9rem; letter-spacing: 0.4em; }
+  .menu { flex-direction: column; align-items: center; gap: 12px; margin-top: 28px; }
+  .btn { width: 100%; max-width: 300px; }
+}
