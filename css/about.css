@@ -1,0 +1,543 @@
+/* ===== 기본 설정 ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #000;
+  color: #e9e4dc;
+  font-family: "Noto Sans KR", sans-serif;
+  line-height: 1.75;
+  overflow-x: hidden;
+}
+
+#stars {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+}
+
+strong { color: #ffc58a; font-weight: 500; }
+
+/* ===== 상단 메뉴 ===== */
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 24px;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 180, 110, 0.12);
+}
+
+.topbar a {
+  color: #ffe3c4;
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.topbar-cta {
+  padding: 6px 16px;
+  border: 1px solid rgba(255, 180, 110, 0.5);
+  border-radius: 999px;
+  transition: all 0.3s;
+}
+
+.topbar-cta:hover {
+  background: rgba(255, 140, 50, 0.2);
+  box-shadow: 0 0 16px rgba(255, 140, 50, 0.4);
+}
+
+main {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 0 16px 120px;
+}
+
+/* ===== 첫 화면 ===== */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.eyebrow {
+  font-family: "Orbitron", sans-serif;
+  letter-spacing: 0.4em;
+  color: rgba(255, 190, 130, 0.8);
+  font-size: 0.9rem;
+}
+
+.hero h1 {
+  margin-top: 12px;
+  font-size: clamp(2.4rem, 7vw, 4rem);
+  font-weight: 700;
+  background: linear-gradient(180deg, #fff 0%, #ffd8a8 60%, #ff9a4a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.lead {
+  margin-top: 16px;
+  font-size: 1.1rem;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.scroll-hint {
+  margin-top: 64px;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.scroll-hint span {
+  animation: bounce 1.8s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+
+/* ===== 설명 카드 ===== */
+.card {
+  position: relative;
+  margin-top: 56px;
+  padding: 40px 36px;
+  background: rgba(16, 10, 6, 0.72);
+  border: 1px solid rgba(255, 170, 100, 0.16);
+  border-radius: 20px;
+  backdrop-filter: blur(6px);
+}
+
+.num {
+  font-family: "Orbitron", sans-serif;
+  font-size: 0.85rem;
+  color: #ff9a4a;
+  letter-spacing: 0.2em;
+}
+
+.card h2 {
+  margin: 6px 0 16px;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.4;
+}
+
+.card p + p { margin-top: 12px; }
+
+.note {
+  margin-top: 20px !important;
+  padding: 14px 18px;
+  border-left: 3px solid #ff9a4a;
+  background: rgba(255, 140, 50, 0.08);
+  border-radius: 0 10px 10px 0;
+  font-size: 0.93rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.sub {
+  margin-top: 24px !important;
+  font-weight: 500;
+  color: #fff;
+}
+
+.muted, .credit {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.85rem;
+}
+
+.credit { margin-top: 10px !important; text-align: right; }
+
+/* 스크롤하면 나타나는 효과 (js에서 visible 클래스 추가) */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.9s ease, transform 0.9s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===== 01: 작은 블랙홀 그림 ===== */
+.visual {
+  margin: 28px 0 8px;
+  height: 180px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.mini-hole {
+  position: relative;
+  width: 260px;
+  height: 180px;
+}
+
+.mini-disk {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 250px;
+  height: 250px;
+  margin: -125px 0 0 -125px;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, #ff7a1a, #ffd9a0, #ff5a10, #ffb060, #ff7a1a);
+  -webkit-mask: radial-gradient(circle, transparent 34%, #000 36%, #000 48%, transparent 70%);
+  mask: radial-gradient(circle, transparent 34%, #000 36%, #000 48%, transparent 70%);
+  transform: scaleY(0.28);
+  filter: blur(1.5px);
+  animation: spin 6s linear infinite;
+}
+
+.mini-core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 84px;
+  height: 84px;
+  margin: -42px 0 0 -42px;
+  border-radius: 50%;
+  background: #000;
+  box-shadow: 0 0 0 2px rgba(255, 210, 160, 0.7), 0 0 30px 6px rgba(255, 140, 50, 0.6), 0 0 80px 20px rgba(255, 100, 30, 0.25);
+}
+
+@keyframes spin {
+  from { transform: scaleY(0.28) rotate(0deg); }
+  to   { transform: scaleY(0.28) rotate(360deg); }
+}
+
+/* ===== 02: 단계 ===== */
+.steps {
+  list-style: none;
+  margin-top: 28px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  counter-reset: none;
+}
+
+.steps li {
+  position: relative;
+  padding: 18px 10px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.steps li + li::before {
+  content: "→";
+  position: absolute;
+  left: -12px;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  color: #ff9a4a;
+}
+
+.step-icon { font-size: 2rem; }
+.steps b { color: #fff; font-weight: 500; }
+.steps small { color: rgba(255, 255, 255, 0.5); font-size: 0.8rem; }
+
+/* ===== 03: 계산기 ===== */
+.calc {
+  margin-top: 24px;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 170, 100, 0.2);
+  border-radius: 16px;
+}
+
+.calc-q { font-weight: 500; color: #fff; }
+
+.calc-buttons {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.calc-buttons button {
+  padding: 8px 14px;
+  border: 1px solid rgba(255, 180, 110, 0.35);
+  border-radius: 999px;
+  background: transparent;
+  color: #ffe3c4;
+  font-family: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+
+.calc-buttons button:hover,
+.calc-buttons button.active {
+  background: rgba(255, 140, 50, 0.25);
+  border-color: #ff9a4a;
+  color: #fff;
+}
+
+.calc-result {
+  margin-top: 18px;
+  min-height: 110px;
+  padding: 16px;
+  text-align: center;
+  border-radius: 12px;
+  background: rgba(255, 140, 50, 0.07);
+}
+
+.calc-result span { display: block; font-size: 0.9rem; color: rgba(255, 255, 255, 0.6); }
+
+.calc-result strong {
+  display: block;
+  margin: 4px 0;
+  font-family: "Orbitron", "Noto Sans KR", sans-serif;
+  font-size: 1.7rem;
+  color: #ffb36b;
+}
+
+.calc-result p { font-size: 0.93rem; }
+
+.formula {
+  margin-top: 12px !important;
+  text-align: right;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* ===== 04: 스파게티화 ===== */
+.spaghetti {
+  position: relative;
+  height: 120px;
+  overflow: hidden;
+  border-radius: 14px;
+  background: radial-gradient(circle at 85% 50%, rgba(255, 120, 40, 0.25), transparent 45%);
+}
+
+.spaghetti .target {
+  position: absolute;
+  right: 12%;
+  font-size: 3rem;
+  filter: drop-shadow(0 0 12px rgba(255, 130, 50, 0.9));
+}
+
+.astronaut {
+  position: absolute;
+  left: 8%;
+  font-size: 2.6rem;
+  animation: stretch 4s ease-in infinite;
+  transform-origin: center;
+}
+
+@keyframes stretch {
+  0%   { left: 8%;  transform: scale(1, 1);      opacity: 1; }
+  60%  { left: 50%; transform: scale(1.6, 0.8);  opacity: 1; }
+  90%  { left: 76%; transform: scale(5, 0.25);   opacity: 0.6; }
+  100% { left: 82%; transform: scale(8, 0.1);    opacity: 0; }
+}
+
+/* ===== 05: 시간 지연 ===== */
+.time-widget {
+  margin-top: 24px;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 170, 100, 0.2);
+  border-radius: 16px;
+}
+
+.clocks {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.clock {
+  padding: 16px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 12px;
+}
+
+.clock-label { display: block; font-size: 0.88rem; color: rgba(255, 255, 255, 0.65); }
+
+.clock-value {
+  display: block;
+  margin-top: 6px;
+  font-family: "Orbitron", monospace;
+  font-size: 1.5rem;
+  color: #9fd2ff;
+}
+
+.clock-value.hot { color: #ffb36b; }
+
+.range-label {
+  display: block;
+  margin-top: 20px;
+  font-size: 0.9rem;
+}
+
+.range-label input {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  accent-color: #ff8a3a;
+}
+
+.time-result {
+  margin-top: 14px !important;
+  text-align: center;
+  font-weight: 500;
+  color: #fff;
+}
+
+/* ===== 06: NASA 갤러리 ===== */
+.gallery {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.gallery a {
+  display: block;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #111;
+  color: inherit;
+  text-decoration: none;
+}
+
+.gallery img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  transition: transform 0.5s;
+}
+
+.gallery a:hover img { transform: scale(1.08); }
+
+.gallery figcaption {
+  padding: 8px 10px;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.7);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ===== 07: 뒤집히는 카드 ===== */
+.facts {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.fact {
+  height: 170px;
+  perspective: 900px;
+  cursor: pointer;
+}
+
+.fact-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.7s;
+  transform-style: preserve-3d;
+}
+
+.fact.flipped .fact-inner { transform: rotateY(180deg); }
+
+.fact-front,
+.fact-back {
+  position: absolute;
+  inset: 0;
+  padding: 18px;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.fact-front {
+  background: linear-gradient(135deg, rgba(255, 140, 50, 0.18), rgba(255, 80, 30, 0.06));
+  border: 1px solid rgba(255, 170, 100, 0.3);
+  font-weight: 500;
+  color: #fff;
+}
+
+.fact-front .q-mark { font-size: 1.6rem; margin-bottom: 6px; }
+
+.fact-back {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transform: rotateY(180deg);
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+/* ===== 마지막 ===== */
+.cta {
+  margin-top: 100px;
+  text-align: center;
+}
+
+.cta h2 { font-size: 1.7rem; color: #fff; }
+.cta p { margin-top: 8px; color: rgba(255, 255, 255, 0.65); }
+
+.btn-primary {
+  display: inline-block;
+  margin-top: 28px;
+  padding: 16px 36px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ff8c28, #ff5a1e);
+  color: #fff;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.3s;
+}
+
+.btn-primary:hover {
+  box-shadow: 0 0 32px rgba(255, 120, 40, 0.75);
+  transform: translateY(-2px);
+}
+
+/* ===== 모바일 ===== */
+@media (max-width: 600px) {
+  .topbar { padding: 12px 16px; }
+  .card { padding: 28px 20px; }
+  .card h2 { font-size: 1.3rem; }
+  .steps { grid-template-columns: 1fr; gap: 20px; }
+  .steps li + li::before { content: "↓"; left: 50%; top: -11px; }
+  .clocks { grid-template-columns: 1fr; }
+  .gallery { grid-template-columns: 1fr 1fr; }
+  .facts { grid-template-columns: 1fr; }
+  .mini-hole { transform: scale(0.8); }
+}

@@ -1,0 +1,397 @@
+/* ===== 기본 설정 ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #000;
+  color: #f0e8de;
+  font-family: "Noto Sans KR", sans-serif;
+  overflow: hidden;
+  height: 100vh;
+}
+
+#sim {
+  position: fixed;
+  inset: 0;
+  display: block;
+  touch-action: none;   /* 손가락으로 블랙홀을 움직일 때 화면이 스크롤되지 않게 */
+  cursor: crosshair;
+}
+
+.hidden { display: none !important; }
+
+button { font-family: inherit; }
+
+/* ===== 시작 패널 ===== */
+.setup {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.35);
+  transition: opacity 0.8s ease;
+}
+
+.setup.fade-out { opacity: 0; pointer-events: none; }
+
+.setup-card {
+  width: 100%;
+  max-width: 520px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  padding: 24px 26px 26px;
+  background: rgba(14, 9, 5, 0.82);
+  border: 1px solid rgba(255, 180, 110, 0.25);
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 60px rgba(255, 120, 40, 0.12);
+}
+
+.back {
+  color: rgba(255, 220, 180, 0.7);
+  text-decoration: none;
+  font-size: 0.85rem;
+}
+
+.back:hover { color: #fff; }
+
+.setup-card h1 {
+  margin-top: 8px;
+  font-size: 1.6rem;
+  color: #fff;
+}
+
+.desc {
+  margin-top: 4px;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.label {
+  margin-top: 18px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* 즐기는 방식 고르기 */
+.mode-options {
+  margin-top: 20px;
+  display: grid;
+  gap: 12px;
+}
+
+.mode-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 18px;
+  border: 1px solid rgba(255, 180, 110, 0.35);
+  border-radius: 16px;
+  background: rgba(255, 140, 50, 0.08);
+  color: #fff;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.mode-card i { font-style: normal; font-size: 2.2rem; }
+.mode-card span { display: flex; flex-direction: column; gap: 4px; }
+.mode-card b { font-size: 1.1rem; font-weight: 500; }
+.mode-card small { font-size: 0.82rem; line-height: 1.5; color: rgba(255, 255, 255, 0.6); }
+
+.mode-card:hover:not(:disabled) {
+  border-color: #ff9a4a;
+  background: rgba(255, 140, 50, 0.2);
+  box-shadow: 0 0 24px rgba(255, 130, 50, 0.35);
+  transform: translateY(-1px);
+}
+
+/* 아직 잠긴 방식 */
+.mode-card.locked {
+  border-style: dashed;
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(255, 255, 255, 0.45);
+  cursor: not-allowed;
+}
+
+.name-input {
+  width: 100%;
+  margin-top: 8px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  font-family: inherit;
+  font-size: 1rem;
+  outline: none;
+}
+
+.name-input:focus { border-color: #ff9a4a; }
+
+.install-btn {
+  width: 100%;
+  margin-top: 22px;
+  padding: 15px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ff8c28, #ff5a1e);
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.install-btn:hover {
+  box-shadow: 0 0 30px rgba(255, 120, 40, 0.7);
+  transform: translateY(-1px);
+}
+
+/* ===== 계기판 ===== */
+.hud { position: fixed; inset: 0; z-index: 10; pointer-events: none; }
+
+.panel {
+  position: absolute;
+  padding: 12px 16px;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 180, 110, 0.18);
+  border-radius: 14px;
+  backdrop-filter: blur(6px);
+  font-size: 0.85rem;
+}
+
+.hud-info { top: 16px; left: 16px; min-width: 210px; }
+.hud-size { top: 16px; right: 16px; text-align: right; min-width: 170px; }
+.hud-eaten { bottom: 16px; left: 16px; min-width: 200px; }
+
+.hud-name { font-size: 1.05rem; font-weight: 700; color: #fff; }
+.hud-place { color: rgba(255, 220, 180, 0.75); }
+.hud-stage { margin-top: 6px; font-family: "Orbitron", "Noto Sans KR", sans-serif; color: #ffb36b; font-size: 0.8rem; letter-spacing: 0.05em; }
+
+.progress {
+  margin-top: 6px;
+  height: 4px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+#progressBar {
+  width: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #ff8c28, #ffd08a);
+  transition: width 0.3s;
+}
+
+.hud-label { font-size: 0.72rem; color: rgba(255, 255, 255, 0.5); }
+.hud-big { font-family: "Orbitron", "Noto Sans KR", sans-serif; font-size: 1.25rem; color: #ffcf9a; margin-bottom: 4px; }
+.hud-time { font-family: "Orbitron", monospace; color: #fff; }
+
+#eatenList { list-style: none; margin-top: 4px; }
+#eatenList li { display: flex; justify-content: space-between; gap: 16px; line-height: 1.7; }
+#eatenList li b { font-weight: 500; color: #ffcf9a; }
+
+.hud-controls {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  display: flex;
+  gap: 8px;
+  pointer-events: auto;
+}
+
+.hud-controls button,
+.hud-controls a {
+  width: 46px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 180, 110, 0.3);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  color: #ffe3c4;
+  font-size: 1rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+
+.hud-controls button:hover,
+.hud-controls a:hover {
+  background: rgba(255, 140, 50, 0.25);
+  box-shadow: 0 0 14px rgba(255, 140, 50, 0.4);
+}
+
+.hint {
+  position: absolute;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.45);
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.85);
+  white-space: nowrap;
+}
+
+/* ===== 해설, 단계 제목 ===== */
+.narration {
+  position: fixed;
+  z-index: 15;
+  top: 120px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 32px);
+  max-width: 640px;
+  text-align: center;
+  font-size: 1.1rem;
+  color: #fff;
+  text-shadow: 0 0 12px rgba(0, 0, 0, 0.9), 0 0 24px rgba(255, 120, 40, 0.4);
+  opacity: 0;
+  transition: opacity 0.6s;
+  pointer-events: none;
+}
+
+.narration.show { opacity: 1; }
+
+.stage-title {
+  position: fixed;
+  z-index: 15;
+  left: 0;
+  right: 0;
+  bottom: 22%;
+  text-align: center;
+  opacity: 0;
+  transform: scale(1.15);
+  transition: opacity 0.8s, transform 1.2s;
+  pointer-events: none;
+}
+
+.stage-title.show { opacity: 1; transform: scale(1); }
+
+.stage-title small {
+  display: block;
+  font-family: "Orbitron", sans-serif;
+  letter-spacing: 0.4em;
+  font-size: 0.85rem;
+  color: #ffb36b;
+}
+
+.stage-title strong {
+  display: block;
+  font-size: clamp(2rem, 6vw, 3.4rem);
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 0 30px rgba(255, 130, 50, 0.6);
+}
+
+/* ===== 엔딩 ===== */
+.ending {
+  position: fixed;
+  inset: 0;
+  z-index: 25;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+  animation: fadeIn 2s ease forwards;
+}
+
+.ending-card {
+  width: 100%;
+  max-width: 480px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  padding: 30px 26px;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  backdrop-filter: blur(8px);
+}
+
+.ending-small { font-size: 0.9rem; color: rgba(255, 255, 255, 0.65); letter-spacing: 0.1em; }
+
+.ending h1 {
+  margin-top: 6px;
+  font-family: "Orbitron", sans-serif;
+  font-size: 2.6rem;
+  letter-spacing: 0.2em;
+  background: linear-gradient(180deg, #fff, #ffc98f);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.ending-result { margin-top: 12px; line-height: 1.7; }
+.ending-result b { color: #ffcf9a; font-weight: 500; }
+
+.ending h2 { margin-top: 24px; font-size: 1rem; color: rgba(255, 255, 255, 0.8); }
+
+.record-list {
+  margin-top: 8px;
+  list-style: none;
+  text-align: left;
+  font-size: 0.85rem;
+}
+
+.record-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.record-list li span:last-child { color: rgba(255, 255, 255, 0.5); white-space: nowrap; }
+.record-list li.latest { background: rgba(255, 140, 50, 0.12); border-radius: 8px; }
+
+.ending-buttons { margin-top: 20px; }
+
+.ghost-btn {
+  display: inline-block;
+  margin-top: 12px;
+  color: rgba(255, 255, 255, 0.65);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.ghost-btn:hover { color: #fff; }
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ===== 모바일 ===== */
+@media (max-width: 600px) {
+  .panel { padding: 8px 10px; font-size: 0.75rem; }
+  .hud-info { top: 10px; left: 10px; min-width: 0; max-width: 48%; }
+  .hud-size { top: 10px; right: 10px; min-width: 0; max-width: 48%; }
+  .hud-eaten { bottom: 70px; left: 10px; min-width: 150px; }
+  .hud-name { font-size: 0.9rem; }
+  .hud-big { font-size: 0.95rem; }
+  .hud-controls { right: 10px; left: 10px; bottom: 12px; justify-content: flex-end; }
+  .hud-controls button, .hud-controls a { width: 42px; height: 42px; }
+  .hint { display: none; }
+  .narration { top: 130px; font-size: 0.95rem; }
+}
+
+/* 2주차: 마지막 화면의 '다음 이야기' 문구 */
+.ending-next {
+  margin-top: 6px;
+  font-size: 0.9rem;
+  color: rgba(255, 210, 160, 0.75);
+}

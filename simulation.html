@@ -4,58 +4,104 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>블랙홀 시뮬레이션 | 블랙홀 시뮬레이터</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 40px 16px;
-      background: #000;
-      color: #e9e4dc;
-      font-family: "Noto Sans KR", sans-serif;
-      line-height: 1.7;
-    }
-    main { max-width: 720px; margin: 0 auto; }
-    a { color: #ffb36b; }
-    h1 { color: #fff; }
-    section {
-      margin-top: 20px;
-      padding: 20px 24px;
-      border: 1px dashed rgba(255, 180, 110, 0.4);
-      border-radius: 14px;
-    }
-    .todo { color: rgba(255, 255, 255, 0.45); font-size: 0.9rem; }
-    ol { padding-left: 20px; }
-  </style>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/simulation.css">
 </head>
 <body>
-  <main>
-    <a href="index.html">← 처음으로</a>
-    <h1>블랙홀 시뮬레이션</h1>
-    <p class="todo">🚧 준비 중인 페이지입니다. (2~5주차 구현 예정)</p>
+  <!-- 시뮬레이션 화면 전체 (js/simulation.js) -->
+  <canvas id="sim"></canvas>
 
-    <!-- 페이지 구성 (예정) -->
-    <section>
-      <h2>블랙홀 설치</h2>
-      <p class="todo">지도에서 설치 위치 선택 (지도 API, Geolocation), 처음 크기와 이름 정하기</p>
-    </section>
+  <!-- ===== 1. 시작 패널: 어떻게 즐길지 고른다 ===== -->
+  <section id="setup" class="setup">
+    <div class="setup-card">
+      <a href="index.html" class="back">← 처음으로</a>
+      <h1>블랙홀 시뮬레이션</h1>
+      <p class="desc">블랙홀에 이름을 붙이고, 어떻게 즐길지 골라 주세요.</p>
 
-    <section>
-      <h2>시뮬레이션</h2>
-      <p class="todo">마우스로 블랙홀을 움직여 주변을 삼키며 성장</p>
-      <ol>
-        <li>거리</li>
-        <li>도시</li>
-        <li>지구</li>
-        <li>태양계</li>
-        <li>우리 은하</li>
-        <li>우주</li>
-        <li>멀티버스</li>
-      </ol>
-    </section>
+      <h2 class="label">블랙홀 이름</h2>
+      <input id="nameInput" class="name-input" type="text" maxlength="20" placeholder="이름 없는 블랙홀">
 
-    <section>
-      <h2>엔딩</h2>
-      <p class="todo">새로운 빅뱅, 내 블랙홀 기록 (localStorage)</p>
-    </section>
-  </main>
+      <div class="mode-options">
+        <button id="playBtn" class="mode-card" type="button">
+          <i>🕳️</i>
+          <span>
+            <b>블랙홀 조종하기</b>
+            <small>도시 한복판에 떨어진 블랙홀을 직접 움직여, 도시부터 우주 전체까지 삼켜 보세요.</small>
+          </span>
+        </button>
+        <!-- 지구·우주 단계와 함께 열릴 예정 -->
+        <button class="mode-card locked" type="button" disabled>
+          <i>🔒</i>
+          <span>
+            <b>우주 관측하기</b>
+            <small>지구·우주 단계와 함께 열릴 예정이에요.</small>
+          </span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 2. 시뮬레이션 계기판 ===== -->
+  <div id="hud" class="hud hidden">
+    <div class="panel hud-info">
+      <div class="hud-name" id="hudName"></div>
+      <div class="hud-place" id="hudPlace"></div>
+      <div class="hud-stage" id="hudStage"></div>
+      <div class="progress"><div id="progressBar"></div></div>
+    </div>
+
+    <div class="panel hud-size">
+      <div class="hud-label">블랙홀 크기</div>
+      <div class="hud-big" id="hudSize">-</div>
+      <div class="hud-label">경과 시간</div>
+      <div class="hud-time" id="hudTime">00:00</div>
+    </div>
+
+    <div class="panel hud-eaten">
+      <div class="hud-label">삼킨 것</div>
+      <ul id="eatenList"></ul>
+    </div>
+
+    <div class="hud-controls">
+      <button id="pauseBtn" type="button" title="일시정지 (스페이스바)">⏸</button>
+      <button id="speedBtn" type="button" title="속도">×1</button>
+      <button id="soundBtn" type="button" title="소리">🔊</button>
+      <a href="index.html" title="처음으로">🏠</a>
+    </div>
+
+    <p class="hint" id="hint"></p>
+  </div>
+
+  <!-- 해설 문구, 단계 제목 -->
+  <div id="narration" class="narration"></div>
+  <div id="stageTitle" class="stage-title">
+    <small id="stageTitleSmall"></small>
+    <strong id="stageTitleBig"></strong>
+  </div>
+
+  <!-- ===== 3. 엔딩 ===== -->
+  <section id="ending" class="ending hidden">
+    <div class="ending-card">
+      <p class="ending-small">도시를 모두 삼켰습니다</p>
+      <h1>TO BE CONTINUED</h1>
+      <p class="ending-next">다음 이야기: 지구, 그리고 태양계 (준비 중)</p>
+      <p class="ending-result" id="endingResult"></p>
+
+      <h2>내 블랙홀 기록</h2>
+      <ol id="recordList" class="record-list"></ol>
+
+      <div class="ending-buttons">
+        <button id="restartBtn" type="button" class="install-btn">다시 하기</button>
+        <a href="index.html" class="ghost-btn">처음으로</a>
+      </div>
+    </div>
+  </section>
+
+  <script src="js/simulation.js"></script>
+  <script src="js/citysim.js"></script>
 </body>
 </html>

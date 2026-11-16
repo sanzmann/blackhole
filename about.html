@@ -4,43 +4,159 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>블랙홀이 뭔가요? | 블랙홀 시뮬레이터</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 40px 16px;
-      background: #000;
-      color: #e9e4dc;
-      font-family: "Noto Sans KR", sans-serif;
-      line-height: 1.7;
-    }
-    main { max-width: 720px; margin: 0 auto; }
-    a { color: #ffb36b; }
-    h1 { color: #fff; }
-    section {
-      margin-top: 20px;
-      padding: 20px 24px;
-      border: 1px dashed rgba(255, 180, 110, 0.4);
-      border-radius: 14px;
-    }
-    .todo { color: rgba(255, 255, 255, 0.45); font-size: 0.9rem; }
-  </style>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/about.css">
 </head>
 <body>
+  <!-- 배경 별 (js/about.js) -->
+  <canvas id="stars"></canvas>
+
+  <header class="topbar">
+    <a href="index.html" class="back">← 처음으로</a>
+    <a href="simulation.html" class="topbar-cta">시뮬레이션 하러가기</a>
+  </header>
+
   <main>
-    <a href="index.html">← 처음으로</a>
-    <h1>블랙홀이 뭔가요?</h1>
-    <p class="todo">🚧 준비 중인 페이지입니다. (2주차 구현 예정)</p>
+    <!-- 첫 화면 -->
+    <section class="hero">
+      <p class="eyebrow">BLACK HOLE 101</p>
+      <h1>블랙홀이 뭔가요?</h1>
+      <p class="lead">우주에서 가장 신비로운 존재, 블랙홀을<br>7가지 이야기로 알아봐요.</p>
+      <div class="scroll-hint">아래로 스크롤<span>↓</span></div>
+    </section>
 
-    <!-- 페이지 구성 (예정) -->
-    <section><h2>01. 빛조차 빠져나올 수 없는 곳</h2><p class="todo">블랙홀의 정의</p></section>
-    <section><h2>02. 블랙홀은 어떻게 생겨날까?</h2><p class="todo">별의 일생과 중력 붕괴</p></section>
-    <section><h2>03. 사건의 지평선</h2><p class="todo">사건의 지평선 크기 계산기</p></section>
-    <section><h2>04. 스파게티화</h2><p class="todo">늘어나는 애니메이션</p></section>
-    <section><h2>05. 시간이 느리게 흐르는 곳</h2><p class="todo">시간 지연 시계</p></section>
-    <section><h2>06. 실제로 찍힌 블랙홀</h2><p class="todo">NASA 이미지 API</p></section>
-    <section><h2>07. 블랙홀의 신기한 사실</h2><p class="todo">뒤집히는 카드</p></section>
+    <!-- 01 정의 -->
+    <section class="card reveal">
+      <span class="num">01</span>
+      <h2>빛조차 빠져나올 수 없는 곳</h2>
+      <p>
+        블랙홀은 아주 작은 공간에 엄청난 질량이 모여 있어서, 중력이 너무 강한 나머지
+        <strong>빛조차 빠져나올 수 없는</strong> 우주 공간이에요.
+        빛이 나오지 않으니 눈으로 직접 볼 수 없고, 그래서 '검은 구멍(Black Hole)'이라는 이름이 붙었어요.
+      </p>
+      <div class="visual">
+        <div class="mini-hole"><div class="mini-disk"></div><div class="mini-core"></div></div>
+      </div>
+      <p class="note">우리가 보는 블랙홀 사진의 밝은 고리는 블랙홀 자체가 아니라, 주변에서 빨려 들어가며 뜨겁게 달아오른 가스의 빛이에요.</p>
+    </section>
 
-    <p><a href="simulation.html">블랙홀 시뮬레이션 하러가기 →</a></p>
+    <!-- 02 생성 -->
+    <section class="card reveal">
+      <span class="num">02</span>
+      <h2>블랙홀은 어떻게 생겨날까?</h2>
+      <p>
+        태양보다 훨씬 무거운 별이 연료를 다 쓰면, 중심핵이 자기 중력을 이기지 못하고 한 점으로 무너져요.
+        이걸 <strong>중력 붕괴</strong>라고 해요. 바깥층은 거대한 폭발(초신성)로 날아가고, 남은 중심이 블랙홀이 됩니다.
+      </p>
+      <ol class="steps">
+        <li><span class="step-icon">⭐</span><b>무거운 별</b><small>연료를 태우며 빛남</small></li>
+        <li><span class="step-icon">💥</span><b>초신성 폭발</b><small>중심핵이 무너짐</small></li>
+        <li><span class="step-icon">🕳️</span><b>블랙홀 탄생</b><small>빛도 탈출 불가</small></li>
+      </ol>
+      <p class="note">은하 중심에는 태양의 수백만~수십억 배 질량을 가진 <strong>초대질량 블랙홀</strong>이 있어요.</p>
+    </section>
+
+    <!-- 03 사건의 지평선 + 계산기 -->
+    <section class="card reveal">
+      <span class="num">03</span>
+      <h2>돌아올 수 없는 선, 사건의 지평선</h2>
+      <p>
+        블랙홀을 둘러싼 경계를 <strong>사건의 지평선</strong>이라고 해요.
+        이 선을 넘으면 빛을 포함한 그 무엇도 다시 나올 수 없어요.
+        사건의 지평선의 크기는 질량에 비례해요.
+      </p>
+
+      <div class="calc">
+        <p class="calc-q">이 천체를 블랙홀로 만들면 사건의 지평선 크기는?</p>
+        <div class="calc-buttons" id="calcButtons"></div>
+        <div class="calc-result">
+          <span id="calcName">버튼을 눌러 보세요</span>
+          <strong id="calcValue">-</strong>
+          <p id="calcCompare"></p>
+        </div>
+        <p class="formula">반지름 r = 2GM / c² &nbsp;(슈바르츠실트 반지름)</p>
+      </div>
+    </section>
+
+    <!-- 04 스파게티화 -->
+    <section class="card reveal">
+      <span class="num">04</span>
+      <h2>국수처럼 늘어나는 몸, 스파게티화</h2>
+      <p>
+        블랙홀에 가까워지면 발끝과 머리에 작용하는 중력의 차이가 엄청나게 커져서,
+        몸이 국수 가락처럼 길게 늘어나요. 과학자들은 이걸 실제로
+        <strong>스파게티화(spaghettification)</strong>라고 불러요.
+      </p>
+      <div class="visual spaghetti">
+        <span class="astronaut">🧑‍🚀</span>
+        <span class="target">🕳️</span>
+      </div>
+    </section>
+
+    <!-- 05 시간 지연 -->
+    <section class="card reveal">
+      <span class="num">05</span>
+      <h2>시간이 느리게 흐르는 곳</h2>
+      <p>
+        중력이 강한 곳일수록 시간이 느리게 흘러요. 아인슈타인의 <strong>일반 상대성 이론</strong>이 알려준 사실이에요.
+        블랙홀 가까이에서 보낸 1시간이 멀리 있는 사람에게는 몇 년이 될 수도 있어요.
+      </p>
+
+      <div class="time-widget">
+        <div class="clocks">
+          <div class="clock">
+            <span class="clock-label">🌍 지구의 시계</span>
+            <span class="clock-value" id="earthClock">00:00:00</span>
+          </div>
+          <div class="clock">
+            <span class="clock-label">🕳️ 블랙홀 근처의 시계</span>
+            <span class="clock-value hot" id="holeClock">00:00:00</span>
+          </div>
+        </div>
+        <label class="range-label">
+          <span id="distLabel"></span>
+          <input type="range" id="distRange" min="101" max="1000" value="115">
+        </label>
+        <p class="time-result" id="timeResult"></p>
+      </div>
+    </section>
+
+    <!-- 06 실제 사진 (NASA API) -->
+    <section class="card reveal">
+      <span class="num">06</span>
+      <h2>실제로 찍힌 블랙홀</h2>
+      <p>
+        2019년, 전 세계 전파망원경을 연결한 <strong>사건의 지평선 망원경(EHT)</strong> 연구팀이
+        M87 은하 중심 블랙홀의 그림자를 처음으로 촬영했어요.
+        2022년에는 우리 은하 중심에 있는 블랙홀 <strong>궁수자리 A*</strong>의 모습도 공개됐어요.
+      </p>
+      <p class="sub">NASA가 공개한 블랙홀 이미지</p>
+      <div class="gallery" id="gallery">
+        <p class="muted">NASA 이미지를 불러오는 중...</p>
+      </div>
+      <p class="credit">이미지 출처: NASA Image and Video Library</p>
+    </section>
+
+    <!-- 07 신기한 사실 -->
+    <section class="card reveal">
+      <span class="num">07</span>
+      <h2>블랙홀의 신기한 사실</h2>
+      <p>카드를 눌러서 뒤집어 보세요.</p>
+      <div class="facts" id="facts"></div>
+    </section>
+
+    <!-- 마지막: 시뮬레이션으로 -->
+    <section class="cta reveal">
+      <h2>이제 직접 블랙홀을 설치해 볼까요?</h2>
+      <p>지구 위에 작은 블랙홀 하나를 놓으면 어떤 일이 벌어질까요.</p>
+      <a href="simulation.html" class="btn-primary">블랙홀 시뮬레이션 하러가기 →</a>
+    </section>
   </main>
+
+  <script src="js/about.js"></script>
 </body>
 </html>
