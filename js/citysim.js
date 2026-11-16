@@ -145,6 +145,7 @@ const citySim = (function () {
           it.vx = Math.cos(a) * kind.fly;
           it.vy = Math.sin(a) * kind.fly;
         }
+        it.z0 = it.z;   // 원래 높이 (끌려가다 풀려나면 이 높이로 돌아간다)
         it.flip = it.vx > 0;
         items.push(it);
       }
@@ -264,6 +265,14 @@ const citySim = (function () {
             else { it.x *= -0.95; it.y *= -0.95; }
           }
         }
+        // 끌려가다 풀려난 물체는 원래 높이로 내려앉고 똑바로 선다
+        if (it.z !== it.z0 || it.rot !== 0) {
+          const k = Math.min(1, dt * 3);
+          it.z = lerp(it.z, it.z0, k);
+          it.rot = lerp(it.rot, 0, k);
+          if (Math.abs(it.z - it.z0) < 0.01) it.z = it.z0;
+          if (Math.abs(it.rot) < 0.01) it.rot = 0;
+        }
         if (!landed) continue;
 
         // 사람은 블랙홀이 다가오면 반대쪽으로 달아난다
@@ -273,9 +282,19 @@ const citySim = (function () {
           it.flip = dx < 0;
         }
         if (d < pullR) {
-          if (it.size <= r * EAT_RATIO) it.pulled = true;
+          if (it.size <= r * EAT_RATIO) {
+            it.pulled = true;
+            it.vx = it.vy = 0;   // 끌려가기 시작하면 원래 하던 움직임(주행·걷기)은 멈춘다
+          }
           else it.wobble = 1;   // 아직 너무 커서 흔들리기만 한다
         }
+      }
+
+      // 블랙홀이 빠르게 지나가서 끌어당기는 범위를 벗어나면 풀려난다
+      // (풀어 주지 않으면 블랙홀을 끝없이 쫓아가며 공중에서 빙글빙글 도는 것처럼 보인다)
+      if (it.pulled && d > pullR * 1.3) {
+        it.pulled = false;
+        it.vel = 0;
       }
 
       if (it.pulled) {
@@ -285,10 +304,10 @@ const citySim = (function () {
         const step = Math.min(d, it.vel * dt);
         it.x += dx / d * step;
         it.y += dy / d * step;
-        it.rot += it.spin * Math.min(it.vel / (r * 10), 3) * dt;
-        // 바닥에서 떠오르며 블랙홀 쪽으로
+        // 바닥에서 떠오르며 블랙홀 쪽으로, 가까울수록 빙글빙글 돈다
         const near = clamp(1 - (d - step) / pullR, 0, 1);
-        it.z = lerp(it.z, float * near, Math.min(1, dt * 4));
+        it.rot += it.spin * Math.min(it.vel / (r * 10), 3) * near * dt;
+        it.z = lerp(it.z, Math.max(it.z0, float * near), Math.min(1, dt * 4));
         if (d - step < r + it.size * 0.15) {
           eat(it);
           items.splice(i, 1);
