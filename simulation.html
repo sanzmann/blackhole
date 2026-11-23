@@ -33,12 +33,11 @@
             <small>도시 한복판에 떨어진 블랙홀을 직접 움직여, 도시부터 우주 전체까지 삼켜 보세요.</small>
           </span>
         </button>
-        <!-- 지구·우주 단계와 함께 열릴 예정 -->
-        <button class="mode-card locked" type="button" disabled>
-          <i>🔒</i>
+        <button id="observeBtn" class="mode-card" type="button">
+          <i>🔭</i>
           <span>
             <b>우주 관측하기</b>
-            <small>지구·우주 단계와 함께 열릴 예정이에요.</small>
+            <small>도시를 건너뛰고 바로 태양계로. 블랙홀을 던지고, 시점을 움직이며 우주 끝까지 둘러보세요.</small>
           </span>
         </button>
       </div>
@@ -76,6 +75,51 @@
     <p class="hint" id="hint"></p>
   </div>
 
+  <!-- ===== 태양계 시뮬레이터 조작 패널 (js/solarsim.js) ===== -->
+  <div id="simPanel" class="sim-panel hidden">
+    <div class="sim-row">
+      <span class="sim-label">블랙홀 질량</span>
+      <div id="simMass" class="sim-mass"></div>
+    </div>
+    <div class="sim-row">
+      <span class="sim-label">시간</span>
+      <button id="simSlower" type="button">−</button>
+      <span id="simSpeed" class="sim-speed"></span>
+      <button id="simFaster" type="button">+</button>
+      <span id="simYear" class="sim-year">0.0년</span>
+      <button id="simReset" type="button">↺ 처음부터</button>
+      <button id="simNext" type="button" class="sim-next">다음 단계 →</button>
+    </div>
+    <div class="sim-row">
+      <span class="sim-label">보기</span>
+      <button id="simZoomOut" type="button" title="축소 (마우스 휠, − 키)">🔭 −</button>
+      <button id="simZoomIn" type="button" title="확대 (마우스 휠, + 키)">🔍 +</button>
+      <button id="simRealSize" type="button">실제 크기</button>
+      <span class="sim-label">따라가기</span>
+      <button id="simFocusPrev" type="button" title="이전 천체">◀</button>
+      <span id="simFocusName" class="sim-speed">태양</span>
+      <button id="simFocusNext" type="button" title="다음 천체">▶</button>
+    </div>
+    <div class="sim-row">
+      <span class="sim-label">이동</span>
+      <button id="simJumpSolar" type="button">🪐 태양계</button>
+      <button id="simJumpGalaxy" type="button">🌌 우리 은하</button>
+      <button id="simJumpUniverse" type="button">🌐 우주 끝</button>
+      <button id="simAstro" type="button" disabled>🧑‍🚀 우주인 되기</button>
+    </div>
+  </div>
+  <div id="simLog" class="sim-log hidden"></div>
+
+  <!-- ===== 지구 단계 조작 패널 (js/earthsim.js) ===== -->
+  <div id="earthPanel" class="sim-panel hidden">
+    <div class="sim-row">
+      <span class="sim-label">보기</span>
+      <button id="earthZoomOut" type="button" title="축소 (마우스 휠)">🔭 −</button>
+      <button id="earthZoomIn" type="button" title="확대 (마우스 휠)">🔍 +</button>
+      <button id="earthNext" type="button" class="sim-next" disabled>다음 단계 →</button>
+    </div>
+  </div>
+
   <!-- 해설 문구, 단계 제목 -->
   <div id="narration" class="narration"></div>
   <div id="stageTitle" class="stage-title">
@@ -86,9 +130,9 @@
   <!-- ===== 3. 엔딩 ===== -->
   <section id="ending" class="ending hidden">
     <div class="ending-card">
-      <p class="ending-small">도시를 모두 삼켰습니다</p>
+      <p class="ending-small">태양계를 모두 휩쓸었습니다</p>
       <h1>TO BE CONTINUED</h1>
-      <p class="ending-next">다음 이야기: 지구, 그리고 태양계 (준비 중)</p>
+      <p class="ending-next">다음 이야기: 은하, 우주, 그리고 그 너머 (준비 중)</p>
       <p class="ending-result" id="endingResult"></p>
 
       <h2>내 블랙홀 기록</h2>
@@ -103,5 +147,7 @@
 
   <script src="js/simulation.js"></script>
   <script src="js/citysim.js"></script>
+  <script src="js/earthsim.js"></script>
+  <script src="js/solarsim.js"></script>
 </body>
 </html>

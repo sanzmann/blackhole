@@ -1,10 +1,12 @@
 // ============================================================
 //  블랙홀 시뮬레이션
 //
-//  [도시 단계] 도시 한복판에 떨어진 블랙홀을 마우스로 움직여
-//    사람·자동차·건물·산을 삼키며 지구 표면이 내려다보일 때까지 키운다 (js/citysim.js)
+//  [조작 단계] 도시 → 지구 → 태양계
+//    도시: 사람·자동차·건물·산을 삼키며 지구 표면이 내려다보일 때까지 커진다 (js/citysim.js)
+//    지구·태양계: 실제 물리로 계산하는 우주 시뮬레이터 (js/earthsim.js, js/solarsim.js)
+//    '우주 관측하기'를 고르면 도시·지구를 건너뛰고 태양계부터 바로 시작한다.
 //
-//  지구·태양계·은하 단계는 다음 업데이트에서 이어진다.
+//  은하·우주 단계와 엔딩은 다음 업데이트에서 이어진다.
 // ============================================================
 
 
@@ -75,7 +77,7 @@ function formatTime(sec) {
 // ===== 2. 상태 =====
 const state = {
   mode: "setup",      // setup, play, levelup, ending
-  level: 0,           // 단계 번호 (0 도시)
+  level: 0,           // 조작 단계 번호 (0 도시, 1 지구, 2 태양계)
   speed: 1,
   paused: false,
   sound: true,
@@ -84,13 +86,13 @@ const state = {
   trans: null         // 레벨업 전환 정보
 };
 
-// mode: "play" 블랙홀 조종하기
+// mode: "play" 블랙홀 조종하기(도시부터), "observe" 우주 관측하기(태양계부터)
 const settings = { name: "", mode: "play" };
 
-// 블랙홀: 단계가 끝날 때는 화면 가운데 기준 위치(x, y)와 반지름 r, 시작 화면에서는 화면 반지름 sr
+// 블랙홀: 단계 사이를 넘어갈 때는 화면 가운데 기준 위치(x, y)와 반지름 r, 시작 화면에서는 화면 반지름 sr
 const hole = { x: 0, y: 0, r: 0, sr: 0, flash: 0, startR: 0 };
 
-let eatenTotals = [];     // 단계별 삼킨 개수
+let eatenTotals = [];     // 단계별 삼킨 양 (0 도시, 1 지구, 2 태양계)
 
 const fx = { shake: 0, rings: [], debris: [], jet: 0 };
 
@@ -102,7 +104,7 @@ function holeScreen() {
 
 
 // ===== 3. 단계 정의 =====
-// 단계마다 다른 파일의 시뮬레이터가 맡는다 (지금은 도시 단계: js/citysim.js)
+// 조작 단계는 저마다 다른 파일의 시뮬레이터가 맡는다 (js/citysim.js, js/earthsim.js, js/solarsim.js)
 const LEVELS = [
   {
     key: "city", type: "sim", title: "도시", sim: () => citySim,
@@ -112,6 +114,24 @@ const LEVELS = [
     hint: "🖱️ 마우스(손가락)로 블랙홀 움직이기 · 휠: 확대/축소",
     realSize: () => citySim.radiusMeters()
   },
+  // sim은 다른 파일에 있어서 함수로 나중에 꺼낸다
+  {
+    key: "earth", type: "sim", title: "지구", sim: () => earthSim,
+    label: "지구",
+    intro: "도시를 삼킨 블랙홀이 이제 지구 속으로 들어갑니다.",
+    done: "지구를 삼킨 블랙홀이 태양계로 나아갑니다...",
+    hint: "🖱️ 마우스 휠로 확대·축소해 보세요",
+    realSize: () => earthSim.radiusMeters()
+  },
+  {
+    key: "solar", type: "sim", title: "태양계", sim: () => solarSim,
+    label: "태양계 천체",
+    intro: "블랙홀의 질량을 고르고, 화면을 끌어서 던져 보세요. 실제 중력 법칙으로 계산됩니다.",
+    done: "블랙홀은 계속 자라며, 이제 은하 전체를 향합니다...",
+    hint: "🖱️ 끌어서 블랙홀 던지기 · 휠: 확대/축소 · ⌨️ 방향키: 시점 회전",
+    // 사건의 지평선 반지름 = 2.95 km × (태양 질량 대비)
+    realSize: () => solarSim.radiusMeters()
+  }
 ];
 
 function stageTitle(i) { return LEVELS[i].title; }
@@ -392,6 +412,9 @@ function updateFx(dt) {
     d.life -= dt * 1.3;
     if (d.life <= 0) fx.debris.splice(i, 1);
   }
+  // 제트는 태양계부터
+  const jetTarget = state.mode === "play" && LEVELS[state.level].key === "solar" ? 0.35 : 0;
+  fx.jet += (jetTarget - fx.jet) * Math.min(1, dt * 0.8);
 }
 
 function drawFx() {
@@ -552,8 +575,8 @@ function updateHud(dt) {
 
   const i = state.level;
   const p = state.mode === "play" ? levelProgress() : state.mode === "levelup" ? 1 : 0;
-  hudStage.textContent = `LEVEL ${i + 1} · ${stageTitle(i)}`;
-  progressBar.style.width = (p * 100) + "%";
+  hudStage.textContent = `LEVEL ${i + 1}/${LEVELS.length} · ${stageTitle(i)}`;
+  progressBar.style.width = ((i + p) / LEVELS.length * 100) + "%";
   hudSize.textContent = currentSizeText();
   hudTime.textContent = formatTime(state.elapsed);
 
@@ -571,7 +594,7 @@ function updateHud(dt) {
 
 
 // ===== 9. 진행 흐름 =====
-// 시작 화면에서 버튼을 누르면 도시 단계가 시작된다
+// 처음 화면에서 고른 방식으로 시작한다
 function begin(mode) {
   settings.name = document.getElementById("nameInput").value.trim() || "이름 없는 블랙홀";
   settings.mode = mode;
@@ -596,7 +619,8 @@ function begin(mode) {
   fx.rings = [];
   fx.debris = [];
 
-  state.level = 0;
+  // 조종하기는 도시부터, 관측하기는 도시와 지구를 건너뛰고 태양계부터
+  state.level = mode === "observe" ? LEVELS.length - 1 : 0;
   LEVELS[state.level].sim().start();
   startPlay();
 }
@@ -614,38 +638,75 @@ function startPlay() {
   hintEl.textContent = level.hint || "🖱️ 마우스(손가락)로 블랙홀을 움직여 보세요";
 }
 
-// 도시를 다 삼키면: 블랙홀이 화면 가운데로 오고 땅이 멀어진 뒤 마지막 화면
 function startLevelUp() {
+  const from = LEVELS[state.level];
   state.mode = "levelup";
   state.timer = 0;
-  state.trans = { holeFrom: holeScreen() };
+  state.trans = {
+    from: state.level,
+    to: state.level + 1,
+    holeFrom: holeScreen(),
+    rFrom: hole.r
+  };
   shake(12);
   addRing(holeScreen(), 1.5);
   thump(1.5);
-  narrate(LEVELS[state.level].done);
-  showTitle("CLEAR!", LEVELS[state.level].title);
+  narrate(from.done);
+  if (state.level === LEVELS.length - 1) {
+    showTitle("CLEAR!", "태양계");
+    return;   // 태양계 다음은 마지막 화면
+  }
+  showTitle("LEVEL UP!", LEVELS[state.level + 1].title);
+
+  // 다음 단계를 미리 준비해 둔다 (서서히 나타남)
+  if (state.level === 0) earthSim.prepare();
 }
 
 function updateLevelUp(dt) {
   const tr = state.trans;
   const t = state.timer;
   const k = easeInOut(clamp(t / 3, 0, 1));
-  hole.x = lerp(tr.holeFrom.x - centerX, 0, k);
-  hole.y = lerp(tr.holeFrom.y - centerY, 0, k);
-  hole.r = lerp(tr.holeFrom.r, 5 * unit / 800, k);
-  if (t > 4.2) {
-    citySim.stop();
-    hudEl.classList.add("hidden");
-    setVolume(0);
-    saveRecord();
-    showEnding();
+
+  if (tr.from === 0) {
+    // 도시 → 지구: 도시가 멀어지며 둥근 지구가 나타나고, 블랙홀은 화면 가운데로
+    hole.x = lerp(tr.holeFrom.x - centerX, 0, k);
+    hole.y = lerp(tr.holeFrom.y - centerY, 0, k);
+    hole.r = lerp(tr.holeFrom.r, 5 * unit / 800, k);
+    if (t > 3.6) {
+      citySim.stop();
+      state.level = 1;
+      earthSim.start();
+      startPlay();
+    }
+
+  } else if (tr.from === 1) {
+    // 지구 → 태양계: 지구를 삼킨 블랙홀이 우주로 (지구 단계에서 이미 무너지는 장면을 보여줬다)
+    hole.x = lerp(hole.x, 0, Math.min(1, dt * 2));
+    hole.y = lerp(hole.y, 0, Math.min(1, dt * 2));
+    if (t > 2.2) {
+      state.level = 2;
+      solarSim.start();
+      startPlay();
+    }
+
+  } else if (tr.from === 2) {
+    // 태양계를 마치면: 블랙홀이 화면 가운데로 온 뒤 마지막 화면
+    const h0 = tr.holeFrom;
+    hole.r = lerp(h0.r, 0.03 * unit, k);
+    hole.x = lerp(h0.x - centerX, 0, k);
+    hole.y = lerp(h0.y - centerY, 0, k);
+    if (t > 4) {
+      hudEl.classList.add("hidden");
+      setVolume(0);
+      saveRecord();
+      showEnding();
+    }
   }
 }
 
-
 // ===== 10. 기록 (localStorage) =====
 const RECORD_KEY = "blackholeRecords";
-const MODE_LABELS = { play: "🎮 블랙홀 조종" };
+const MODE_LABELS = { play: "🎮 블랙홀 조종", observe: "🔭 우주 관측" };
 
 function loadRecords() {
   try {
@@ -672,7 +733,7 @@ function showEnding() {
   state.mode = "ending";
   document.getElementById("endingResult").innerHTML =
     `블랙홀 <b>'${settings.name}'</b>이(가)<br>` +
-    `도시를 삼키는 데 <b>${formatTime(state.elapsed)}</b>이 걸렸습니다.`;
+    `태양계를 휩쓰는 데 <b>${formatTime(state.elapsed)}</b>이 걸렸습니다.`;
   const list = document.getElementById("recordList");
   list.innerHTML = "";
   const records = loadRecords().slice(0, 5);
@@ -688,6 +749,8 @@ function showEnding() {
 
 function restart() {
   citySim.stop();
+  earthSim.stop();
+  solarSim.stop();
   document.getElementById("ending").classList.add("hidden");
   const setupEl = document.getElementById("setup");
   setupEl.classList.remove("hidden", "fade-out");
@@ -719,7 +782,7 @@ function update(dt) {
     hole.sr += (unit * 0.06 - hole.sr) * Math.min(1, dt * 2);
 
   } else if (state.mode === "play") {
-    // 도시 단계: js/citysim.js가 맡는다
+    // 도시·지구·태양계: 각 단계의 시뮬레이터가 맡는다
     state.elapsed += dt;
     LEVELS[state.level].sim().update(dt, simDt);
 
@@ -765,15 +828,24 @@ function drawLevelScene() {
     return;
   }
 
-  // 도시를 다 삼킨 뒤: 땅이 멀어지며 어두워지고, 블랙홀이 화면 가운데로
+  // 단계 사이 전환: 블랙홀이 화면 가운데로
+  const tr = state.trans;
   const t = state.timer;
   drawSpace(1);
-  const fade = clamp((t - 1.2) / 2, 0, 1);
-  if (fade < 1) citySim.drawLeaving(easeInOut(clamp(t / 3, 0, 1)));
-  if (fade > 0) {
-    ctx.fillStyle = `rgba(0, 0, 0, ${fade})`;
-    ctx.fillRect(0, 0, width, height);
-    drawSpace(fade);
+  if (tr.from === 0) {
+    // 도시가 멀어지는 동안 둥근 지구가 커다랗게 나타나 제자리 크기로 줄어든다
+    const earthA = clamp((t - 1.2) / 2, 0, 1);
+    if (earthA < 1) citySim.drawLeaving(easeInOut(clamp(t / 3, 0, 1)));
+    if (earthA > 0) {
+      // 멀어진 땅 위로 우주와 지구가 서서히 겹쳐진다
+      ctx.fillStyle = `rgba(0, 0, 0, ${earthA})`;
+      ctx.fillRect(0, 0, width, height);
+      drawSpace(earthA);
+      const R = unit * 0.33 * Math.exp(lerp(Math.log(30), 0, clamp((t - 1.2) / 2.4, 0, 1)));
+      ctx.globalAlpha = earthA;
+      earthSim.drawGlobe(centerX, centerY, R, 120);
+      ctx.globalAlpha = 1;
+    }
   }
   drawHole(holeScreen());
 }
@@ -790,6 +862,7 @@ function loop(now) {
 
 // ===== 13. 이벤트 =====
 document.getElementById("playBtn").addEventListener("click", () => begin("play"));
+document.getElementById("observeBtn").addEventListener("click", () => begin("observe"));
 document.getElementById("restartBtn").addEventListener("click", restart);
 
 const pauseBtn = document.getElementById("pauseBtn");
