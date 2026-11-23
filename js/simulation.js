@@ -134,6 +134,29 @@ const LEVELS = [
   }
 ];
 
+// 은하 그림 (태양계 단계에서 멀리 축소하면 보이는 은하들, js/solarsim.js)
+const galaxySprites = [];
+function makeGalaxySprite(hue) {
+  const c = document.createElement("canvas");
+  c.width = c.height = 64;
+  const g = c.getContext("2d");
+  const glow = g.createRadialGradient(32, 32, 0, 32, 32, 30);
+  glow.addColorStop(0, `hsla(${hue}, 80%, 85%, 0.9)`);
+  glow.addColorStop(0.25, `hsla(${hue}, 70%, 60%, 0.25)`);
+  glow.addColorStop(1, "rgba(0,0,0,0)");
+  g.fillStyle = glow;
+  g.fillRect(0, 0, 64, 64);
+  g.translate(32, 32);
+  for (let i = 0; i < 260; i++) {
+    const t = Math.random();
+    const a = (i % 2) * Math.PI + t * 5 + rand(-0.4, 0.4);
+    g.fillStyle = `hsla(${hue + rand(-20, 20)}, 80%, ${rand(70, 95)}%, ${0.9 - t * 0.6})`;
+    g.fillRect(Math.cos(a) * t * 29, Math.sin(a) * t * 29 * 0.55, 1.3, 1.3);
+  }
+  return c;
+}
+[30, 200, 280, 330, 50].forEach(h => galaxySprites.push(makeGalaxySprite(h)));
+
 function stageTitle(i) { return LEVELS[i].title; }
 function stageLabel(i) { return LEVELS[i].label; }
 function stageFormat(i, n) { return LEVELS[i].format ? LEVELS[i].format(n) : n + "개"; }
